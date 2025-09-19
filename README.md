@@ -3,9 +3,7 @@ Mitchell Nguyen and Ian Kreger group project for CPST-4270 Advanced Application 
 
 Features in Development:
 1.	Transaction history feature - Allows the user to view the last n transactions they made. This will act as a receipt and will mimic a real banking experience.
-2.	Money transfers between different users – Extends the current transfer system beyond just the current user’s checking and savings accounts. Allows sending money to another user’s account in the system.
-3.	Staff role – Creates a special role for bank staff to perform administration tasks.  These tasks may include creating accounts, closing accounts, resetting PINS, and other maintenance tasks.
-4.	Interest Calculation – The system will calculate and update interest earned on savings accounts over an arbitrary period of time.
+2.	Mitchell: Money transfers between different users – Extends the current transfer system beyond just the current user’s checking and savings accounts. Allows sending money to another user’s account in the system.
 
 
 ## ATM Machine
