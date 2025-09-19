@@ -1,10 +1,15 @@
-# ATM Machine
+# CPST-4270-Group-Project
+Mitchell Nguyen and Ian Kreger group project for CPST-4270 Advanced Application Development for Industry.
 
-![GitHub last commit](https://img.shields.io/github/last-commit/rajyash1904/ATM-Machine.svg)![GitHub stars](https://img.shields.io/github/stars/rajyash1904/ATM-Machine.svg)
-![GitHub forks](https://img.shields.io/github/forks/rajyash1904/ATM-Machine.svg)![GitHub issues](https://img.shields.io/github/issues/rajyash1904/ATM-Machine.svg)
+Features in Development:
+1.	Transaction history feature - Allows the user to view the last n transactions they made. This will act as a receipt and will mimic a real banking experience.
+2.	Money transfers between different users – Extends the current transfer system beyond just the current user’s checking and savings accounts. Allows sending money to another user’s account in the system.
+3.	Staff role – Creates a special role for bank staff to perform administration tasks.  These tasks may include creating accounts, closing accounts, resetting PINS, and other maintenance tasks.
+4.	Interest Calculation – The system will calculate and update interest earned on savings accounts over an arbitrary period of time.
 
-## A functional ATM project written in Java
 
+## ATM Machine
+### A functional ATM project written in Java
 This project generates an automated teller machine (ATM) that stores the user's bank account, acount number, and password. With this ATM, users will be able to:
 * Make deposits
 * Withdraw money
