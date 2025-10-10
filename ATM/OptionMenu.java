@@ -6,10 +6,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
+
 public class OptionMenu {
 	Scanner menuInput = new Scanner(System.in);
 	DecimalFormat moneyFormat = new DecimalFormat("'$'###,##0.00");
-	HashMap<Integer, Account> data = new HashMap<Integer, Account>();
+	static HashMap<Integer, Account> data = new HashMap<Integer, Account>();
 
 	public void getLogin() throws IOException {
 		boolean end = false;
@@ -80,8 +81,10 @@ public class OptionMenu {
 				System.out.println(" Type 1 - View Balance");
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
-				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - Exit");
+				//Edited options to transfer to other users
+				System.out.println(" Type 4 - Transfer Funds to Savings");
+				System.out.println(" Type 5 - Transfer Funds to Another User");
+				System.out.println(" Type 6 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -96,11 +99,13 @@ public class OptionMenu {
 				case 3:
 					acc.getCheckingDepositInput();
 					break;
-
 				case 4:
 					acc.getTransferInput("Checkings");
 					break;
 				case 5:
+					//Option to transfer to another user
+					Transfer.transferToUsers(acc, "Checkings");
+				case 6:
 					end = true;
 					break;
 				default:
@@ -121,8 +126,10 @@ public class OptionMenu {
 				System.out.println(" Type 1 - View Balance");
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
-				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - Exit");
+				//Edited options to transfer to other users
+				System.out.println(" Type 4 - Transfer Funds to Savings");
+				System.out.println(" Type 5 - Transfer Funds to Another User");
+				System.out.println(" Type 6 - Exit");
 				System.out.print("Choice: ");
 				int selection = menuInput.nextInt();
 				switch (selection) {
@@ -139,6 +146,9 @@ public class OptionMenu {
 					acc.getTransferInput("Savings");
 					break;
 				case 5:
+					//Option to transfer to another user
+					Transfer.transferToUsers(acc, "Savings");
+				case 6:
 					end = true;
 					break;
 				default:
@@ -182,7 +192,7 @@ public class OptionMenu {
 	}
 
 	public void mainMenu() throws IOException {
-		data.put(952141, new Account(952141, 191904, 1000, 5000));
+		data.put(111, new Account(111, 111, 1000, 5000));
 		data.put(123, new Account(123, 123, 20000, 50000));
 		boolean end = false;
 		while (!end) {
@@ -211,5 +221,14 @@ public class OptionMenu {
 		System.out.println("\nThank You for using this ATM.\n");
 		menuInput.close();
 		System.exit(0);
+	}
+
+	/**
+	 * This function validate if there is an existing user account
+	 * @param accNumber - User account to validate
+	 * @return True or False if the account exist
+	 */
+	public static boolean validateAccount(Integer accNumber){
+		return data.containsKey(accNumber);
 	}
 }
