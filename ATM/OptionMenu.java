@@ -47,7 +47,8 @@ public class OptionMenu {
 				System.out.println("\nSelect the account you want to access: ");
 				System.out.println(" Type 1 - Checkings Account");
 				System.out.println(" Type 2 - Savings Account");
-				System.out.println(" Type 3 - Exit");
+				System.out.println("Type 3 - View Transaction History"); // Added history option
+				System.out.println(" Type 4 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -59,7 +60,10 @@ public class OptionMenu {
 				case 2:
 					getSaving(acc);
 					break;
-				case 3:
+				case 3: //Go to transaction history view
+					getTransactionHistory(acc);
+                	break;
+				case 4:
 					end = true;
 					break;
 				default:
@@ -81,7 +85,8 @@ public class OptionMenu {
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
 				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - Exit");
+				System.out.println(" Type 5 - View Transaction History"); //Added view transaction history option here too
+				System.out.println(" Type 6 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -101,6 +106,10 @@ public class OptionMenu {
 					acc.getTransferInput("Checkings");
 					break;
 				case 5:
+					//View transaction history for this account
+                	getTransactionHistory(acc);
+                	break;
+				case 6:
 					end = true;
 					break;
 				default:
@@ -122,7 +131,8 @@ public class OptionMenu {
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
 				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - Exit");
+				System.out.println(" Type 5 - View Transaction History"); //Added view transaction history option
+				System.out.println(" Type 6 - Exit");
 				System.out.print("Choice: ");
 				int selection = menuInput.nextInt();
 				switch (selection) {
@@ -139,6 +149,10 @@ public class OptionMenu {
 					acc.getTransferInput("Savings");
 					break;
 				case 5:
+					//View transaction history for this account
+                	getTransactionHistory(acc);
+                	break;
+				case 6:
 					end = true;
 					break;
 				default:
@@ -151,6 +165,18 @@ public class OptionMenu {
 		}
 	}
 
+	//Added the method to display recent transactions for the current account
+    public void getTransactionHistory(Account acc) {
+        System.out.print("Enter how many recent transactions you want to view: ");
+        int n = menuInput.nextInt();
+
+        //Displays the last n transactions for this logged-in account
+        TransactionHistory.displayLastTransactions(String.valueOf(acc.getCustomerNumber()), n);
+
+        //Returns to the main account menu after viewing
+        getAccountType(acc);
+    }
+	
 	public void createAccount() throws IOException {
 		int cst_no = 0;
 		boolean end = false;
@@ -213,3 +239,4 @@ public class OptionMenu {
 		System.exit(0);
 	}
 }
+
