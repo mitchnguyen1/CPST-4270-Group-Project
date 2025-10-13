@@ -55,21 +55,54 @@ public class Account {
 
 	public double calcCheckingWithdraw(double amount) {
 		checkingBalance = (checkingBalance - amount);
+		//Records this withdrawal in the transaction history file
+        TransactionHistory.recordTransaction(
+                String.valueOf(customerNumber),
+                "Checking Withdrawal",
+                amount,
+                checkingBalance
+        );
 		return checkingBalance;
 	}
 
 	public double calcSavingWithdraw(double amount) {
 		savingBalance = (savingBalance - amount);
+		//Records this withdrawal in the transaction history file
+        TransactionHistory.recordTransaction(
+                String.valueOf(customerNumber),
+                "Saving Withdrawal",
+                amount,
+                savingBalance
+        );
+		
 		return savingBalance;
+
 	}
 
 	public double calcCheckingDeposit(double amount) {
 		checkingBalance = (checkingBalance + amount);
+
+		//Records this deposit in the transaction history file
+        TransactionHistory.recordTransaction(
+                String.valueOf(customerNumber),
+                "Checking Deposit",
+                amount,
+                checkingBalance
+        );
+
 		return checkingBalance;
 	}
 
 	public double calcSavingDeposit(double amount) {
 		savingBalance = (savingBalance + amount);
+		
+		//Records this deposit in the transaction history file
+        TransactionHistory.recordTransaction(
+                String.valueOf(customerNumber),
+                "Saving Deposit",
+                amount,
+                savingBalance
+        );
 		return savingBalance;
 	}
 
@@ -233,3 +266,4 @@ public class Account {
 		}
 	}
 }
+
