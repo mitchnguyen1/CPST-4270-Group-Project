@@ -47,7 +47,7 @@ public class OptionMenu {
 				System.out.println("\nSelect the account you want to access: ");
 				System.out.println(" Type 1 - Checkings Account");
 				System.out.println(" Type 2 - Savings Account");
-				System.out.println("Type 3 - View Transaction History"); // Added history option
+				System.out.println(" Type 3 - View Transaction History"); // Added history option
 				System.out.println(" Type 4 - Exit");
 				System.out.print("\nChoice: ");
 
@@ -85,8 +85,7 @@ public class OptionMenu {
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
 				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - View Transaction History"); //Added view transaction history option here too
-				System.out.println(" Type 6 - Exit");
+				System.out.println(" Type 5 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -106,10 +105,6 @@ public class OptionMenu {
 					acc.getTransferInput("Checkings");
 					break;
 				case 5:
-					//View transaction history for this account
-                	getTransactionHistory(acc);
-                	break;
-				case 6:
 					end = true;
 					break;
 				default:
@@ -131,8 +126,7 @@ public class OptionMenu {
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
 				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - View Transaction History"); //Added view transaction history option
-				System.out.println(" Type 6 - Exit");
+				System.out.println(" Type 5 - Exit");
 				System.out.print("Choice: ");
 				int selection = menuInput.nextInt();
 				switch (selection) {
@@ -149,10 +143,6 @@ public class OptionMenu {
 					acc.getTransferInput("Savings");
 					break;
 				case 5:
-					//View transaction history for this account
-                	getTransactionHistory(acc);
-                	break;
-				case 6:
 					end = true;
 					break;
 				default:
@@ -239,4 +229,5 @@ public class OptionMenu {
 		System.exit(0);
 	}
 }
+
 
