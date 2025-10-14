@@ -28,7 +28,7 @@ public class OptionMenu {
 					if (data.containsKey(customerNumber) && pinNumber == acc.getPinNumber()) {
 						getAccountType(acc);
 						end = true;
-						return;
+						break;
 					}
 				}
 				if (!end) {
@@ -229,6 +229,7 @@ public class OptionMenu {
 		System.exit(0);
 	}
 }
+
 
 
 
