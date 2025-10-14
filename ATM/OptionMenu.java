@@ -64,7 +64,8 @@ public class OptionMenu {
 					getTransactionHistory(acc);
                 	break;
 				case 4:
-					end = true;
+					System.out.println("Thank you for using this ATM. Goodbye!");
+    				System.exit(0);	
 					break;
 				default:
 					System.out.println("\nInvalid Choice.");
@@ -229,6 +230,7 @@ public class OptionMenu {
 		System.exit(0);
 	}
 }
+
 
 
 
