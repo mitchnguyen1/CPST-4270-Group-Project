@@ -28,7 +28,7 @@ public class Transfer {
 
         // Ask for receiver account number to transfer until valid (0 = cancel)
         int receiverAccNumber;
-        Account receiverAcc;
+        Account receiverAcc; //Account object for the receiver
         while (true) {
             System.out.print("\nEnter the User's Account Number to transfer (0 to cancel): ");
             try {
@@ -39,7 +39,7 @@ public class Transfer {
                     return;
                 }
                 if (OptionMenu.validateAccount(receiverAccNumber)) {
-                    receiverAcc = OptionMenu.data.get(receiverAccNumber);
+                    receiverAcc = OptionMenu.data.get(receiverAccNumber);//save the object from data
                     break; // valid account found
                 } else {
                     System.out.println("User Account does not exist. Please try again.");
@@ -58,8 +58,10 @@ public class Transfer {
 
                 //Prompt user the amount to send and validate if user has enough
                 double amount = amountToSend(senderAcc,senderAccountType);
+
                 //Determine the receiver account type to transfer to
                 int receiverAccountType = receiverAccountTypeSelection();
+
                 //call function to withdrawal from sender's account and deposit into receivers account
                 transferBetweenAccounts(senderAcc, senderAccountType, receiverAcc, receiverAccountType, amount);
 
@@ -86,7 +88,7 @@ public class Transfer {
      * @param senderAccountType  1/2 for Checking or Saving
      * @param receiverAcc Receiver's account object
      * @param receiverAccType  1/2 for Checking or Saving
-     * @param amount Amount to withdrawl
+     * @param amount Amount to withdrawal
      */
     public static void transferBetweenAccounts(Account senderAcc, Integer senderAccountType, Account receiverAcc, Integer receiverAccType, Double amount){
         //Subtract from correct sender's account
@@ -94,11 +96,11 @@ public class Transfer {
             //Subtract the amount from the senders checking
             senderAcc.calcCheckingWithdraw(amount);
             if(receiverAccType == 1){
-                //Subtract the amount from the senders checking
+                //Add the amount to the receiver checking
                 receiverAcc.calcCheckingDeposit(amount);
             }
             else{
-                //Subtract the amount from the senders savings
+                //Add the amount to the receiver saving
                 receiverAcc.calcSavingDeposit(amount);
             }
         }
@@ -107,10 +109,10 @@ public class Transfer {
             senderAcc.calcSavingWithdraw(amount);
 
             if (receiverAccType == 1) {
-                //Subtract the amount from the senders checking
+                //Add the amount to the receiver checkings
                 receiverAcc.calcCheckingDeposit(amount);
             } else {
-                //Subtract the amount from the senders savings
+                //Add the amount to the receiver savings
                 receiverAcc.calcSavingDeposit(amount);
             }
         }
@@ -144,6 +146,7 @@ public class Transfer {
         System.out.println(" Type 2 - Savings Account");
         return input.nextInt();
     }
+
 
     /**
      * Function to validate amount to send is enough in sender's account
