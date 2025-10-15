@@ -16,6 +16,7 @@ public class Transfer {
      * @param senderAcc - Current User's account object
      * @param senderAccType - Checking or Savings account to transfer from
      */
+
     public static void transferToUsers(Account senderAcc, String senderAccType){
         //Save the sender account type
         Integer senderAccountType = 0;

@@ -127,7 +127,7 @@ public class OptionMenu {
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
 				//Edited options to transfer to other users
-				System.out.println(" Type 4 - Transfer Funds to Savings");
+				System.out.println(" Type 4 - Transfer Funds to Checkings");
 				System.out.println(" Type 5 - Transfer Funds to Another User");
 				System.out.println(" Type 6 - Exit");
 				System.out.print("Choice: ");
