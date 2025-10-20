@@ -48,7 +48,8 @@ public class OptionMenu {
 				System.out.println("\nSelect the account you want to access: ");
 				System.out.println(" Type 1 - Checkings Account");
 				System.out.println(" Type 2 - Savings Account");
-				System.out.println(" Type 3 - Exit");
+				System.out.println(" Type 3 - View Transaction History"); // Added history option
+				System.out.println(" Type 4 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -60,8 +61,12 @@ public class OptionMenu {
 				case 2:
 					getSaving(acc);
 					break;
-				case 3:
-					end = true;
+				case 3: //Go to transaction history view
+					getTransactionHistory(acc);
+                	break;
+				case 4:
+					System.out.println("Thank you for using this ATM. Goodbye!");
+    				System.exit(0);	
 					break;
 				default:
 					System.out.println("\nInvalid Choice.");
@@ -161,6 +166,18 @@ public class OptionMenu {
 		}
 	}
 
+	//Added the method to display recent transactions for the current account
+    public void getTransactionHistory(Account acc) {
+        System.out.print("Enter how many recent transactions you want to view: ");
+        int n = menuInput.nextInt();
+
+        //Displays the last n transactions for this logged-in account
+        TransactionHistory.displayLastTransactions(String.valueOf(acc.getCustomerNumber()), n);
+
+        //Returns to the main account menu after viewing
+        getAccountType(acc);
+    }
+	
 	public void createAccount() throws IOException {
 		int cst_no = 0;
 		boolean end = false;
@@ -232,3 +249,8 @@ public class OptionMenu {
 		return data.containsKey(accNumber);
 	}
 }
+
+
+
+
+
