@@ -173,7 +173,7 @@ public class Account {
 		while (!end) {
 			try {
 				if (accType.equals("Checkings")) {
-					System.out.println("\nSelect an account you wish to tranfers funds to:");
+					System.out.println("\nSelect an account you wish to transfers funds to:");
 					System.out.println("1. Savings");
 					System.out.println("2. Exit");
 					System.out.print("\nChoice: ");
