@@ -1,25 +1,22 @@
-import java.io.*;
 import java.util.*;
+import java.net.http.*;
+import java.net.URI;
 
 //The overall class for the transaction history feature
 public class TransactionHistory {
-    //File where are transaction records are stored
-    private static final String HISTORY_FILE = "transaction_history.txt";
 
     //Adds a new transaction record for the specific account
     public static void recordTransaction(String accountNumber, String transactionType, double amount, double balance) {
-        //Opens the file in append mode so previous data is not lost
-        try (FileWriter fw = new FileWriter(HISTORY_FILE, true); 
-            BufferedWriter bw = new BufferedWriter(fw);
-            PrintWriter out = new PrintWriter(bw)) {
-
-            //Creates a formatted record line with all of the necessary deatils    
-            String record = String.format("%s | %s | $%.2f | Balance: $%.2f | Date: %s",
-                accountNumber, transactionType, amount, balance, new Date().toString());
-            //Writes the record as a new line in file
-            out.println(record);
-        //Catches an error if it occurs while saving and displays messgae
-        } catch (IOException e) {
+        try {
+            //Sends the information to Supabase database
+            TransactionHistoryDatabase.saveTransaction(
+                    accountNumber,
+                    transactionType,
+                    amount,
+                    balance
+            );
+        //Catches an error if it occurs while saving and displays message
+        } catch (Exception e) {
             System.out.println("Error saving transaction: " + e.getMessage());
         }
     }
@@ -28,25 +25,93 @@ public class TransactionHistory {
     public static List<String> getLastTransactions(String accountNumber, int n) {
         //Creates a list to store all transactions belonging to this account
         List<String> allTransactions = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(HISTORY_FILE))) {
-            String line;
-            //Reads each line and check if it belongs with the correct account number
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith(accountNumber + " |")) {
-                    allTransactions.add(line);
-                }
+        try {
+            //Fetching the information from Supabase database
+            String url = TransactionHistoryDatabase.SUPABASE_URL +
+                "?customerNumber=eq." + accountNumber +
+                "&order=created_at.desc" +
+                "&limit=" + n; 
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("apikey", TransactionHistoryDatabase.API_KEY)
+                    .header("Authorization", "Bearer " + TransactionHistoryDatabase.API_KEY)
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            //Converts json response to string for simple display
+            String json = response.body();
+
+            if (json.equals("[]")) {
+                return allTransactions;
             }
-        //Catch for if there are no transactions
-        } catch (FileNotFoundException e) {
-            System.out.println("No transaction history found yet.");
-        //Catches I/O errors with the log
-        } catch (IOException e) {
+
+            //Creates the display
+            
+            //Removes the brackets
+            json = json.substring(1, json.length() - 1).trim();
+
+            //Splits by "},{" to handle multiple transactions
+            String[] entries = json.split("\\},\\s*\\{");
+
+
+            for (String entry : entries) {
+
+                //Cleans up leftover braces
+                entry = entry.replace("{", "").replace("}", "");
+
+                //Extracts fields from the string
+                String type = extractValue(entry, "transactionType");
+                String amountStr = extractValue(entry, "amount");
+                String balanceStr = extractValue(entry, "balance");
+                String date = extractValue(entry, "created_at").replace("T", " ").replace("Z", "");
+
+                //Converts strings to numeric types
+                double amount = Double.parseDouble(amountStr);
+                double balance = Double.parseDouble(balanceStr);
+
+                //Final readable format
+                String formatted = String.format(
+                    "%s | Amount: $%.2f | Balance: $%.2f | Date: %s", type, amount, balance, date);
+
+                allTransactions.add(formatted);
+            }
+
+        //Catches any HTTP or other errors
+        } catch (Exception e) {
             System.out.println("Error reading transaction history: " + e.getMessage());
         }
-        //Calculates where to start so we only get last 'n' entries
-        int start = Math.max(0, allTransactions.size() - n);
-        //Returns only the most recent transactions
-        return allTransactions.subList(start, allTransactions.size());
+
+        return allTransactions;
+    }
+
+    //Helper function to extract values from JSON-like string
+    private static String extractValue(String json, String key) {
+        try {
+            int start = json.indexOf("\"" + key + "\":");
+            if (start == -1) return "";
+
+            //Jumps past "key"
+            start += key.length() + 3; 
+
+            //Determines if field is quoted (string) or a number
+            if (json.charAt(start) == '"') {
+                int end = json.indexOf("\"", start + 1);
+                return json.substring(start + 1, end);
+            } else {
+                int endComma = json.indexOf(",", start);
+                int endBrace = json.length();
+                int end = (endComma == -1 ? endBrace : endComma);
+                return json.substring(start, end).trim();
+            }
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     //Displays last n transactions
@@ -62,7 +127,7 @@ public class TransactionHistory {
             for (String record : lastTransactions) {
                 System.out.println(record);
             }
-            System.out.println("-----------------------------\n");
+            System.out.println("------------------------------------------\n");
         }
     }
 }
