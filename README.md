@@ -31,17 +31,17 @@ To run the project:
 6. In the terminal, cd into your project directory. 
 7. Edit the file named db.properties.examples and rename it to db.properties (You will need to contact the developer for login info)
 8. Compile the project with the PostgreSQL driver on the classpath by running this command:
-Mac: javac -cp ".:lib/postgresql-42.x.x.jar" *.java
-Windows: javac -cp ".;lib\postgresql-42.x.x.jar" *.java 
+* Mac: javac -cp ".:lib/postgresql-42.x.x.jar" *.java
+* Windows: javac -cp ".;lib\postgresql-42.x.x.jar" *.java 
 9. Run the ATM program, making sure to include the PostgreSQL jar on the classpath:
-Mac: java -cp ".:lib/postgresql-42.x.x.jar" ATM
-Windows: java -cp ".;lib\postgresql-42.x.x.jar" ATM 
+* Mac: java -cp ".:lib/postgresql-42.x.x.jar" ATM
+* Windows: java -cp ".;lib\postgresql-42.x.x.jar" ATM 
 
 
 
 ---
 ## Visual
-After running the command in #7, you should see this interface:
+After running the command in #9, you should see this interface:
 
 ![ATM interface](https://user-images.githubusercontent.com/77065772/218245894-caabfd9b-3fa4-4833-81ba-07a2eadaf648.PNG)
 
