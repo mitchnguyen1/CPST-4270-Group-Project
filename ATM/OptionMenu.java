@@ -202,7 +202,10 @@ public class OptionMenu {
 		}
 		System.out.println("\nEnter PIN to be registered");
 		int pin = menuInput.nextInt();
-		data.put(cst_no, new Account(cst_no, pin));
+		Account acc = new Account(cst_no, pin);
+		data.put(cst_no, acc);
+		// save to the database
+		DatabaseConnection.saveAccount(acc);
 		System.out.println("\nYour new account has been successfuly registered!");
 		System.out.println("\nRedirecting to login.............");
 		getLogin();

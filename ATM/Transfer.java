@@ -39,7 +39,8 @@ public class Transfer {
                     System.out.println("Transfer cancelled.");
                     return;
                 }
-                if (OptionMenu.validateAccount(receiverAccNumber)) {
+                //validate account on database
+                if (DatabaseConnection.validateDBAccount(receiverAccNumber)) {
                     receiverAcc = OptionMenu.data.get(receiverAccNumber);//save the object from data
                     break; // valid account found
                 } else {

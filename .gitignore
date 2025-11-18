@@ -4,6 +4,10 @@
 # Log files
 *.log
 
+# environment variables
+.env
+db.properties
+
 # IntelliJ IDEA project files
 .idea/
 
