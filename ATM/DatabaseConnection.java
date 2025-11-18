@@ -8,7 +8,7 @@ public class DatabaseConnection {
     private static Connection getConnection() throws SQLException {
         //Get database information
         Properties db = new Properties();
-        try (FileInputStream fis = new FileInputStream("db.properties")) {
+        try (FileInputStream fis = new FileInputStream("resources/db.properties")) {
             db.load(fis);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load db.properties", e);
