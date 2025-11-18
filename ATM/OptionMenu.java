@@ -22,21 +22,17 @@ public class OptionMenu {
 				customerNumber = menuInput.nextInt();
 				System.out.print("\nEnter your PIN number: ");
 				pinNumber = menuInput.nextInt();
-				Iterator it = data.entrySet().iterator();
-				while (it.hasNext()) {
-					Map.Entry pair = (Map.Entry) it.next();
-					Account acc = (Account) pair.getValue();
-					if (data.containsKey(customerNumber) && pinNumber == acc.getPinNumber()) {
-						getAccountType(acc);
+
+				if (DatabaseConnection.validateDBAccount(customerNumber) && DatabaseConnection.validatePin(pinNumber)) {
+						getAccountType(DatabaseConnection.loadAccount(customerNumber));
 						end = true;
 						break;
-					}
-				}
-				if (!end) {
+				} else {
 					System.out.println("\nWrong Customer Number or Pin Number");
 				}
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Character(s). Only Numbers.");
+				menuInput.nextLine(); // clear bad input
 			}
 		}
 	}
@@ -181,23 +177,23 @@ public class OptionMenu {
 	public void createAccount() throws IOException {
 		int cst_no = 0;
 		boolean end = false;
+
 		while (!end) {
 			try {
 				System.out.println("\nEnter your customer number ");
 				cst_no = menuInput.nextInt();
-				Iterator it = data.entrySet().iterator();
-				while (it.hasNext()) {
-					Map.Entry pair = (Map.Entry) it.next();
-					if (!data.containsKey(cst_no)) {
-						end = true;
-					}
-				}
-				if (!end) {
+
+				// Check directly in the database
+				if (DatabaseConnection.validateDBAccount(cst_no)) {
 					System.out.println("\nThis customer number is already registered");
+				} else {
+					// number is free to use
+					end = true;
 				}
+
 			} catch (InputMismatchException e) {
-				System.out.println("\nInvalid Choice.");
-				menuInput.next();
+				System.out.println("\nInvalid choice. Please enter numbers only.");
+				menuInput.next(); // clear invalid input
 			}
 		}
 		System.out.println("\nEnter PIN to be registered");
