@@ -1,5 +1,6 @@
 
 
+import javax.xml.crypto.Data;
 import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -39,8 +40,9 @@ public class Transfer {
                     System.out.println("Transfer cancelled.");
                     return;
                 }
-                if (OptionMenu.validateAccount(receiverAccNumber)) {
-                    receiverAcc = OptionMenu.data.get(receiverAccNumber);//save the object from data
+                //validate account on database
+                if (DatabaseConnection.validateDBAccount(receiverAccNumber)) {
+                    receiverAcc = DatabaseConnection.loadAccount(receiverAccNumber);//create account object from database
                     break; // valid account found
                 } else {
                     System.out.println("User Account does not exist. Please try again.");
@@ -70,11 +72,6 @@ public class Transfer {
                 displayBalance(senderAcc, senderAccountType);
                 System.out.println("\nTransfer to " + receiverAccNumber + " is successful");
 
-                //Displays both account balance to validate function.
-//                displayBalance(receiverAcc,1);
-//                displayBalance(receiverAcc,2);
-//                displayBalance(senderAcc,1);
-//                displayBalance(senderAcc,2);
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter digits only.");
@@ -94,27 +91,27 @@ public class Transfer {
     public static void transferBetweenAccounts(Account senderAcc, Integer senderAccountType, Account receiverAcc, Integer receiverAccType, Double amount){
         //Subtract from correct sender's account
         if(senderAccountType == 1){
-            //Subtract the amount from the senders checking
-            senderAcc.calcCheckingWithdraw(amount);
+            //Subtract the amount from the senders checking and Update in database
+            DatabaseConnection.updateCheckingBalance(senderAcc.getCustomerNumber(), senderAcc.calcCheckingWithdraw(amount));
             if(receiverAccType == 1){
-                //Add the amount to the receiver checking
-                receiverAcc.calcCheckingDeposit(amount);
+                //Add the amount to the receiver checking and Update in database
+                DatabaseConnection.updateCheckingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcCheckingDeposit(amount));
             }
             else{
-                //Add the amount to the receiver saving
-                receiverAcc.calcSavingDeposit(amount);
+                //Add the amount to the receiver saving and Update in database
+                DatabaseConnection.updateSavingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcSavingDeposit(amount));
+
             }
         }
         else {
-            //Subtract the amount from the senders savings
-            senderAcc.calcSavingWithdraw(amount);
-
+            //Subtract the amount from the senders savings and Update in database
+            DatabaseConnection.updateSavingBalance(senderAcc.getCustomerNumber(), senderAcc.calcSavingWithdraw(amount));
             if (receiverAccType == 1) {
-                //Add the amount to the receiver checkings
-                receiverAcc.calcCheckingDeposit(amount);
+                //Add the amount to the receiver checkings and Update in database
+                DatabaseConnection.updateCheckingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcCheckingDeposit(amount));
             } else {
-                //Add the amount to the receiver savings
-                receiverAcc.calcSavingDeposit(amount);
+                //Add the amount to the receiver saving and Update in database
+                DatabaseConnection.updateSavingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcSavingDeposit(amount));
             }
         }
 

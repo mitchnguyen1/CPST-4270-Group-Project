@@ -46,11 +46,11 @@ public class Account {
 	}
 
 	public double getCheckingBalance() {
-		return checkingBalance;
+		return DatabaseConnection.checkingBalance(this);
 	}
 
 	public double getSavingBalance() {
-		return savingBalance;
+		return DatabaseConnection.savingBalance(this);
 	}
 
 	public double calcCheckingWithdraw(double amount) {
@@ -74,7 +74,6 @@ public class Account {
                 amount,
                 savingBalance
         );
-		
 		return savingBalance;
 
 	}
@@ -89,7 +88,6 @@ public class Account {
                 amount,
                 checkingBalance
         );
-
 		return checkingBalance;
 	}
 
