@@ -77,7 +77,7 @@ Thumbs.db
 *.class
 
 # JAR files used for libraries
-lib/*.jar
+
 
 # Compiled Webpack files
 dist/
