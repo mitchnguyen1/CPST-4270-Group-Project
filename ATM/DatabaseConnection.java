@@ -1,15 +1,23 @@
+import java.io.InputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.io.FileInputStream;
 import java.util.Properties;
 
 public class DatabaseConnection {
-    //Connection object to make connect to the database for queries
+
+    // Load DB properties from classpath
     private static Connection getConnection() throws SQLException {
-        //Get database information
         Properties db = new Properties();
-        try (FileInputStream fis = new FileInputStream("resources/db.properties")) {
-            db.load(fis);
+
+        // Load db.properties using classloader
+        try (InputStream is = DatabaseConnection.class.getClassLoader()
+                .getResourceAsStream("db.properties")) {
+
+            if (is == null) {
+                throw new RuntimeException("db.properties not found in classpath");
+            }
+
+            db.load(is);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load db.properties", e);
         }
@@ -18,17 +26,15 @@ public class DatabaseConnection {
         String user = db.getProperty("db.user");
         String password = db.getProperty("db.password");
 
-        //establish connection
         return DriverManager.getConnection(url, user, password);
     }
-    // Function to save an account to the database
-    public static void saveAccount(Account account) {
-        //Query for inserting into account table for a new customer
-        String sql =
-                "INSERT INTO account (\"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\") " +
-                        "VALUES (?, ?, ?, ?, NOW())";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+    // Save an account to the database
+    public static void saveAccount(Account account) {
+        String sql = "INSERT INTO account (\"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\") "
+                   + "VALUES (?, ?, ?, ?, NOW())";
+
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, account.getCustomerNumber());
@@ -37,20 +43,16 @@ public class DatabaseConnection {
             ps.setDouble(4, account.getSavingBalance());
 
             ps.executeUpdate();
-        }
-        catch (SQLException e) {
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
-    //function to create an account object from database
+    // Load account from database
     public static Account loadAccount(int accNumber) {
-
-        String sql =
-                "SELECT \"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\" " +
-                        "FROM account " +
-                        "WHERE \"customerNumber\" = ?";
+        String sql = "SELECT \"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\" "
+                   + "FROM account WHERE \"customerNumber\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -58,20 +60,14 @@ public class DatabaseConnection {
             ps.setInt(1, accNumber);
 
             try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
 
-                if (!rs.next()) {
-                    return null; // no account found
-                }
-
-                // Build Account object from DB values
-                Account acc = new Account(
+                return new Account(
                         rs.getInt("customerNumber"),
                         rs.getInt("pinNumber"),
                         rs.getDouble("checkingBalance"),
                         rs.getDouble("savingBalance")
                 );
-
-                return acc;
             }
 
         } catch (SQLException e) {
@@ -80,44 +76,39 @@ public class DatabaseConnection {
         }
     }
 
-    // This function validates if there is an existing user account in the database
+    // Validate account exists
     public static boolean validateDBAccount(Integer accNumber) {
-        String sql =
-                "SELECT \"customerNumber\" " +
-                        "FROM account " +
-                        "WHERE \"customerNumber\" = ?";
+        String sql = "SELECT \"customerNumber\" FROM account WHERE \"customerNumber\" = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // set parameter with account number
             ps.setInt(1, accNumber);
 
-            // execute the query
             try (ResultSet rs = ps.executeQuery()) {
-
-                //if a row exists, return true
                 return rs.next();
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false; // account not found, return false
+            return false;
         }
     }
-    //update checking balance
+
+    // Update checking balance (Method Overload for Account object)
+    public static void updateCheckingBalance(Account account) {
+        updateCheckingBalance(account.getCustomerNumber(), account.getCheckingBalance());
+    }
+
+    // Update checking balance (Primitive values)
     public static void updateCheckingBalance(int customerNumber, double newCheckingBalance) {
-        String sql =
-                "UPDATE account " +
-                        "SET \"checkingBalance\" = ? " +
-                        "WHERE \"customerNumber\" = ?";
+        String sql = "UPDATE account SET \"checkingBalance\" = ? WHERE \"customerNumber\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setDouble(1, newCheckingBalance);
             ps.setInt(2, customerNumber);
-
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -125,18 +116,20 @@ public class DatabaseConnection {
         }
     }
 
+    // Update savings balance (Method Overload for Account object)
+    public static void updateSavingBalance(Account account) {
+        updateSavingBalance(account.getCustomerNumber(), account.getSavingBalance());
+    }
+
+    // Update savings balance (Primitive values)
     public static void updateSavingBalance(int customerNumber, double newSavingBalance) {
-        String sql =
-                "UPDATE account " +
-                        "SET \"savingBalance\" = ? " +
-                        "WHERE \"customerNumber\" = ?";
+        String sql = "UPDATE account SET \"savingBalance\" = ? WHERE \"customerNumber\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setDouble(1, newSavingBalance);
             ps.setInt(2, customerNumber);
-
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -144,11 +137,9 @@ public class DatabaseConnection {
         }
     }
 
-
-
-    // Get Checking Balance from the database
+    // Get checking balance
     public static double checkingBalance(Account account) {
-        String sql = "SELECT \"checkingBalance\" FROM account WHERE \"customerNumber\" = ?;";
+        String sql = "SELECT \"checkingBalance\" FROM account WHERE \"customerNumber\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -156,24 +147,19 @@ public class DatabaseConnection {
             ps.setInt(1, account.getCustomerNumber());
 
             try (ResultSet rs = ps.executeQuery()) {
-
-                if (rs.next()) {
-                    //return as double
-                    return rs.getDouble("checkingBalance");
-                }
+                if (rs.next()) return rs.getDouble("checkingBalance");
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Account not found or error
         return 0;
     }
 
-    // Get Savings Balance from the database
+    // Get savings balance
     public static double savingBalance(Account account) {
-        String sql = "SELECT \"savingBalance\" FROM account WHERE \"customerNumber\" = ?;";
+        String sql = "SELECT \"savingBalance\" FROM account WHERE \"customerNumber\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -181,41 +167,32 @@ public class DatabaseConnection {
             ps.setInt(1, account.getCustomerNumber());
 
             try (ResultSet rs = ps.executeQuery()) {
-
-                if (rs.next()) {
-                    //return as double
-                    return rs.getDouble("savingBalance");
-                }
+                if (rs.next()) return rs.getDouble("savingBalance");
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Account not found or error
         return 0;
     }
 
-    // validate pin
+    // Validate PIN exists
     public static boolean validatePin(int accountNumber) {
-        String sql = "SELECT \"pinNumber\" FROM account WHERE \"customerNumber\" = ?;";
+        String sql = "SELECT \"pinNumber\" FROM account WHERE \"customerNumber\" = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // set parameter with account number
             ps.setInt(1, accountNumber);
 
-            // execute the query
             try (ResultSet rs = ps.executeQuery()) {
-
-                //if a row exists, return true
                 return rs.next();
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false; // account not found, return false
+            return false;
         }
     }
 }

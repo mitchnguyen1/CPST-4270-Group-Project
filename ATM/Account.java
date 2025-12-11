@@ -1,3 +1,4 @@
+
 import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -46,34 +47,46 @@ public class Account {
 	}
 
 	public double getCheckingBalance() {
-		return DatabaseConnection.checkingBalance(this);
+		// FIXED: Return the local variable, not the DB value
+		return checkingBalance;
 	}
 
 	public double getSavingBalance() {
-		return DatabaseConnection.savingBalance(this);
+		// FIXED: Return the local variable, not the DB value
+		return savingBalance;
 	}
 
 	public double calcCheckingWithdraw(double amount) {
 		checkingBalance = (checkingBalance - amount);
-		//Records this withdrawal in the transaction history file
-        TransactionHistory.recordTransaction(
-                String.valueOf(customerNumber),
-                "Checking Withdrawal",
-                amount,
-                checkingBalance
-        );
+		
+		// Records this withdrawal in the transaction history file
+		TransactionHistory.recordTransaction(
+				String.valueOf(customerNumber),
+				"Checking Withdrawal",
+				amount,
+				checkingBalance
+		);
+		
+		// Update Database Explicitly
+		DatabaseConnection.updateCheckingBalance(customerNumber, checkingBalance);
+		
 		return checkingBalance;
 	}
 
 	public double calcSavingWithdraw(double amount) {
 		savingBalance = (savingBalance - amount);
-		//Records this withdrawal in the transaction history file
-        TransactionHistory.recordTransaction(
-                String.valueOf(customerNumber),
-                "Saving Withdrawal",
-                amount,
-                savingBalance
-        );
+		
+		// Records this withdrawal in the transaction history file
+		TransactionHistory.recordTransaction(
+				String.valueOf(customerNumber),
+				"Saving Withdrawal",
+				amount,
+				savingBalance
+		);
+		
+		// Update Database Explicitly
+		DatabaseConnection.updateSavingBalance(customerNumber, savingBalance);
+		
 		return savingBalance;
 
 	}
@@ -81,37 +94,57 @@ public class Account {
 	public double calcCheckingDeposit(double amount) {
 		checkingBalance = (checkingBalance + amount);
 
-		//Records this deposit in the transaction history file
-        TransactionHistory.recordTransaction(
-                String.valueOf(customerNumber),
-                "Checking Deposit",
-                amount,
-                checkingBalance
-        );
+		// Records this deposit in the transaction history file
+		TransactionHistory.recordTransaction(
+				String.valueOf(customerNumber),
+				"Checking Deposit",
+				amount,
+				checkingBalance
+		);
+		
+		// Update Database Explicitly
+		DatabaseConnection.updateCheckingBalance(customerNumber, checkingBalance);
+		
 		return checkingBalance;
 	}
 
 	public double calcSavingDeposit(double amount) {
 		savingBalance = (savingBalance + amount);
 		
-		//Records this deposit in the transaction history file
-        TransactionHistory.recordTransaction(
-                String.valueOf(customerNumber),
-                "Saving Deposit",
-                amount,
-                savingBalance
-        );
+		// Records this deposit in the transaction history file
+		TransactionHistory.recordTransaction(
+				String.valueOf(customerNumber),
+				"Saving Deposit",
+				amount,
+				savingBalance
+		);
+		
+		// Update Database Explicitly
+		DatabaseConnection.updateSavingBalance(customerNumber, savingBalance);
+		
 		return savingBalance;
 	}
 
 	public void calcCheckTransfer(double amount) {
 		checkingBalance = checkingBalance - amount;
 		savingBalance = savingBalance + amount;
+		
+		// Update Database (Must update both accounts explicitly)
+		DatabaseConnection.updateCheckingBalance(customerNumber, checkingBalance);
+		DatabaseConnection.updateSavingBalance(customerNumber, savingBalance);
+		
+		TransactionHistory.recordTransaction(String.valueOf(customerNumber), "Transfer Check->Save", amount, checkingBalance);
 	}
 
 	public void calcSavingTransfer(double amount) {
 		savingBalance = savingBalance - amount;
 		checkingBalance = checkingBalance + amount;
+		
+		// Update Database (Must update both accounts explicitly)
+		DatabaseConnection.updateSavingBalance(customerNumber, savingBalance);
+		DatabaseConnection.updateCheckingBalance(customerNumber, checkingBalance);
+		
+		TransactionHistory.recordTransaction(String.valueOf(customerNumber), "Transfer Save->Check", amount, savingBalance);
 	}
 
 	public void getCheckingWithdrawInput() {
@@ -264,4 +297,3 @@ public class Account {
 		}
 	}
 }
-
