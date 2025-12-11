@@ -6,25 +6,11 @@ import java.util.Properties;
 public class DatabaseConnection {
 
     // Load DB properties from classpath
-    public static Connection getConnection() throws SQLException {
-        Properties db = new Properties();
+    private static Connection getConnection() throws SQLException {
 
-        // Load db.properties using classloader
-        try (InputStream is = DatabaseConnection.class.getClassLoader()
-                .getResourceAsStream("db.properties")) {
-
-            if (is == null) {
-                throw new RuntimeException("db.properties not found in classpath");
-            }
-
-            db.load(is);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load db.properties", e);
-        }
-
-        String url = db.getProperty("db.url");
-        String user = db.getProperty("db.user");
-        String password = db.getProperty("db.password");
+        String url = Config.get("db.url");
+        String user = Config.get("db.user");
+        String password = Config.get("db.password");
 
         return DriverManager.getConnection(url, user, password);
     }
@@ -195,5 +181,7 @@ public class DatabaseConnection {
             return false;
         }
     }
+
+
 
 }

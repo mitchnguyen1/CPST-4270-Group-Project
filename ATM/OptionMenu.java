@@ -47,7 +47,6 @@ public class OptionMenu {
 				System.out.println(" Type 3 - View Transaction History"); // Added history option
 				System.out.println(" Type 4 - Exit");
 				System.out.print("\nChoice: ");
-
 				int selection = menuInput.nextInt();
 
 				switch (selection) {
@@ -92,7 +91,7 @@ public class OptionMenu {
 
 				switch (selection) {
 				case 1:
-					System.out.println("\nCheckings Account Balance: " + moneyFormat.format(acc.getCheckingBalance()));
+					System.out.println("\nCheckings Account Balance: " + moneyFormat.format(DatabaseConnection.checkingBalance(acc)));
 					break;
 				case 2:
 					acc.getCheckingWithdrawInput();
@@ -131,11 +130,12 @@ public class OptionMenu {
 				System.out.println(" Type 4 - Transfer Funds to Checkings");
 				System.out.println(" Type 5 - Transfer Funds to Another User");
 				System.out.println(" Type 6 - Exit");
-				System.out.print("Choice: ");
+				System.out.print("\nChoice: ");
+
 				int selection = menuInput.nextInt();
 				switch (selection) {
 				case 1:
-					System.out.println("\nSavings Account Balance: " + moneyFormat.format(acc.getSavingBalance()));
+					System.out.println("\nSavings Account Balance: " + moneyFormat.format(DatabaseConnection.savingBalance(acc)));
 					break;
 				case 2:
 					acc.getsavingWithdrawInput();
@@ -237,14 +237,6 @@ public class OptionMenu {
 		System.exit(0);
 	}
 
-	/**
-	 * This function validate if there is an existing user account
-	 * @param accNumber - User account to validate
-	 * @return True or False if the account exist
-	 */
-	public static boolean validateAccount(Integer accNumber){
-		return data.containsKey(accNumber);
-	}
 }
 
 

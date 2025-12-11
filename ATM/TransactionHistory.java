@@ -42,7 +42,7 @@ public class TransactionHistory {
                     .header("Accept", "application/json")
                     .GET()
                     .build();
-            System.out.println(request);
+
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response =
                     client.send(request, HttpResponse.BodyHandlers.ofString());
