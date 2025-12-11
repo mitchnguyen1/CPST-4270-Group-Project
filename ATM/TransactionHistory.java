@@ -1,5 +1,3 @@
-package src;
-
 import java.util.*;
 import java.net.http.*;
 import java.net.URI;

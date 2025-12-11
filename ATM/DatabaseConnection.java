@@ -7,24 +7,10 @@ public class DatabaseConnection {
 
     // Load DB properties from classpath
     private static Connection getConnection() throws SQLException {
-        Properties db = new Properties();
 
-        // Load db.properties using classloader
-        try (InputStream is = DatabaseConnection.class.getClassLoader()
-                .getResourceAsStream("db.properties")) {
-
-            if (is == null) {
-                throw new RuntimeException("db.properties not found in classpath");
-            }
-
-            db.load(is);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load db.properties", e);
-        }
-
-        String url = db.getProperty("db.url");
-        String user = db.getProperty("db.user");
-        String password = db.getProperty("db.password");
+        String url = Config.get("db.url");
+        String user = Config.get("db.user");
+        String password = Config.get("db.password");
 
         return DriverManager.getConnection(url, user, password);
     }
@@ -32,7 +18,7 @@ public class DatabaseConnection {
     // Save an account to the database
     public static void saveAccount(Account account) {
         String sql = "INSERT INTO account (\"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\") "
-                   + "VALUES (?, ?, ?, ?, NOW())";
+                + "VALUES (?, ?, ?, ?, NOW())";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -52,7 +38,7 @@ public class DatabaseConnection {
     // Load account from database
     public static Account loadAccount(int accNumber) {
         String sql = "SELECT \"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\" "
-                   + "FROM account WHERE \"customerNumber\" = ?";
+                + "FROM account WHERE \"customerNumber\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -195,4 +181,7 @@ public class DatabaseConnection {
             return false;
         }
     }
+
+
+
 }
