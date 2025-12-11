@@ -1,6 +1,11 @@
+package src;
+
 import java.util.*;
 import java.net.http.*;
 import java.net.URI;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 
 //The overall class for the transaction history feature
 public class TransactionHistory {
@@ -69,7 +74,11 @@ public class TransactionHistory {
                 String type = extractValue(entry, "transactionType");
                 String amountStr = extractValue(entry, "amount");
                 String balanceStr = extractValue(entry, "balance");
-                String date = extractValue(entry, "created_at").replace("T", " ").replace("Z", "");
+                
+                //Fix: Converts to Central Time (CST/CDT) and formats to 12-hour clock
+                String date = ZonedDateTime.parse(extractValue(entry, "created_at"))
+                        .withZoneSameInstant(ZoneId.of("America/Chicago"))
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a z"));
 
                 //Converts strings to numeric types
                 double amount = Double.parseDouble(amountStr);
