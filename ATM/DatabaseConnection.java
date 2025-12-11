@@ -6,7 +6,7 @@ import java.util.Properties;
 public class DatabaseConnection {
 
     // Load DB properties from classpath
-    private static Connection getConnection() throws SQLException {
+    public static Connection getConnection() throws SQLException {
         Properties db = new Properties();
 
         // Load db.properties using classloader
@@ -32,7 +32,7 @@ public class DatabaseConnection {
     // Save an account to the database
     public static void saveAccount(Account account) {
         String sql = "INSERT INTO account (\"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\") "
-                   + "VALUES (?, ?, ?, ?, NOW())";
+                + "VALUES (?, ?, ?, ?, NOW())";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -52,7 +52,7 @@ public class DatabaseConnection {
     // Load account from database
     public static Account loadAccount(int accNumber) {
         String sql = "SELECT \"customerNumber\", \"pinNumber\", \"checkingBalance\", \"savingBalance\", \"created_at\" "
-                   + "FROM account WHERE \"customerNumber\" = ?";
+                + "FROM account WHERE \"customerNumber\" = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -195,4 +195,5 @@ public class DatabaseConnection {
             return false;
         }
     }
+
 }

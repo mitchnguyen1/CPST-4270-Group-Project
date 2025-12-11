@@ -208,8 +208,6 @@ public class OptionMenu {
 	}
 
 	public void mainMenu() throws IOException {
-		data.put(111, new Account(111, 111, 1000, 5000));
-		data.put(123, new Account(123, 123, 20000, 50000));
 		boolean end = false;
 		while (!end) {
 			try {

@@ -30,28 +30,51 @@ public class Transfer {
 
         // Ask for receiver account number to transfer until valid (0 = cancel)
         int receiverAccNumber;
-        Account receiverAcc; //Account object for the receiver
+        Account receiverAcc; // Account object for the receiver
+
         while (true) {
-            System.out.print("\nEnter the User's Account Number to transfer (0 to cancel): ");
+            System.out.print("\nEnter the user's account number to transfer to (0 to cancel): ");
+
             try {
-                //save the account number of the receiver and validate it exists
                 receiverAccNumber = input.nextInt();
+
+                // Cancel option
                 if (receiverAccNumber == 0) {
                     System.out.println("Transfer cancelled.");
                     return;
                 }
-                //validate account on database
-                if (DatabaseConnection.validateDBAccount(receiverAccNumber)) {
-                    receiverAcc = DatabaseConnection.loadAccount(receiverAccNumber);//create account object from database
-                    break; // valid account found
-                } else {
-                    System.out.println("User Account does not exist. Please try again.");
+
+                // Prevent transfer to self
+                if (receiverAccNumber == senderAcc.getCustomerNumber()) {
+                    System.out.println("You cannot transfer funds to the same account. Please enter a different account number.");
+                    continue; // ask again
                 }
+
+                // Validate account exists
+                if (DatabaseConnection.validateDBAccount(receiverAccNumber)) {
+
+                    // Confirm account number
+                    System.out.print("\nYou entered account number " + receiverAccNumber + ". Is this correct? (Y/N): ");
+                    String confirm = input.next().trim();
+
+                    if (confirm.equalsIgnoreCase("Y")) {
+                        receiverAcc = DatabaseConnection.loadAccount(receiverAccNumber);
+                        break; // done, move forward
+                    } else {
+                        continue;
+                    }
+
+                } else {
+                    System.out.println("User account does not exist. Please try again.");
+                }
+
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter digits only.");
-                input.next();
+                input.next(); // clear the buffer
             }
         }
+
+
 
 
         while (true) {
@@ -65,13 +88,20 @@ public class Transfer {
                 //Determine the receiver account type to transfer to
                 int receiverAccountType = receiverAccountTypeSelection();
 
+                System.out.println(); // adds a blank line
+
+                //initial status of loading bar
+                showProgress(40);
                 //call function to withdrawal from sender's account and deposit into receivers account
                 transferBetweenAccounts(senderAcc, senderAccountType, receiverAcc, receiverAccountType, amount);
 
+                //completed status of loading bar
+                showProgress(100);
+
                 //Display the sender balance and success message
                 displayBalance(senderAcc, senderAccountType);
-                System.out.println("\nTransfer to " + receiverAccNumber + " is successful");
-
+                System.out.println("\nTransfer of $" +amount + " to Account Number: " + receiverAccNumber + " is successful!");
+                System.out.println("\n-----------------------------------------------------------------");
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter digits only.");
@@ -94,10 +124,14 @@ public class Transfer {
             //Subtract the amount from the senders checking and Update in database
             DatabaseConnection.updateCheckingBalance(senderAcc.getCustomerNumber(), senderAcc.calcCheckingWithdraw(amount));
             if(receiverAccType == 1){
+                //update status of loading bar
+                showProgress(75);
                 //Add the amount to the receiver checking and Update in database
                 DatabaseConnection.updateCheckingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcCheckingDeposit(amount));
             }
             else{
+                //update status of loading bar
+                showProgress(75);
                 //Add the amount to the receiver saving and Update in database
                 DatabaseConnection.updateSavingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcSavingDeposit(amount));
 
@@ -107,14 +141,17 @@ public class Transfer {
             //Subtract the amount from the senders savings and Update in database
             DatabaseConnection.updateSavingBalance(senderAcc.getCustomerNumber(), senderAcc.calcSavingWithdraw(amount));
             if (receiverAccType == 1) {
+                //update status of loading bar
+                showProgress(75);
                 //Add the amount to the receiver checkings and Update in database
                 DatabaseConnection.updateCheckingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcCheckingDeposit(amount));
             } else {
+                //update status of loading bar
+                showProgress(75);
                 //Add the amount to the receiver saving and Update in database
                 DatabaseConnection.updateSavingBalance(receiverAcc.getCustomerNumber(), receiverAcc.calcSavingDeposit(amount));
             }
         }
-
     }
 
     /**
@@ -125,9 +162,11 @@ public class Transfer {
     public static void displayBalance(Account senderAcc, Integer senderAccountType){
         //Print the sender balance-from either checking or savings
         if (senderAccountType == 1) {
+            System.out.println();
             System.out.println("\nCurrent Checking Account ("+senderAcc.getCustomerNumber()+") has a balance: "
                     + moneyFormat.format(senderAcc.getCheckingBalance()));
         } else {
+            System.out.println();
             System.out.println("\nCurrent Saving Account ("+senderAcc.getCustomerNumber()+") has a balance: "
                     + moneyFormat.format(senderAcc.getSavingBalance()));
         }
@@ -142,6 +181,7 @@ public class Transfer {
         System.out.println("\nSelect the receiver's account type you want to send: ");
         System.out.println(" Type 1 - Checking Account");
         System.out.println(" Type 2 - Savings Account");
+        System.out.print("\nChoice: ");
         return input.nextInt();
     }
 
@@ -180,5 +220,20 @@ public class Transfer {
             }
         }
     }
+
+    public static void showProgress(int percent) {
+        // Clamp percent between 0–100
+        if (percent < 0) percent = 0;
+        if (percent > 100) percent = 100;
+
+        int totalBars = 20; // Length of bar
+        int filledBars = (percent * totalBars) / 100;
+
+        String bar = "=".repeat(filledBars) + " ".repeat(totalBars - filledBars);
+
+        // Updates the same line
+        System.out.print("\rProcessing transfer... [" + bar + "] " + percent + "%");
+    }
+
 
 }
