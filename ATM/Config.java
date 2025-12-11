@@ -10,7 +10,7 @@ public class Config {
         static {
             // Load db.properties using classloader
             try (InputStream is = DatabaseConnection.class.getClassLoader()
-                    .getResourceAsStream("db.properties")) {
+                    .getResourceAsStream("resources/db.properties")) {
 
                 if (is == null) {
                     throw new RuntimeException("db.properties not found in classpath");

@@ -1,0 +1,5 @@
+db.url=jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require
+db.user=postgres.udvrwcrhhqtqfxcikyvw
+db.password=
+db.apiURL=
+db.api=
